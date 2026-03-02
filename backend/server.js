@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import { protect } from "./src/middleware/auth.middleware.js";
+import channelRoutes from "./src/routes/channel.routes.js";
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ app.get("/api/protected", protect, (req, res) => {
     user: req.user,
   });
 });
+
+app.use("/api/channels", channelRoutes);
 
 const PORT = process.env.PORT || 8080;
 
