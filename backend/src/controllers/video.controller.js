@@ -49,3 +49,19 @@ export const getAllVideos = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getVideoById = async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.id)
+      .populate("channel", "name description");
+
+    if (!video) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
+    res.status(200).json(video);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
