@@ -60,6 +60,10 @@ export const getVideoById = async (req, res) => {
       return res.status(404).json({ message: "Video not found" });
     }
 
+    // Increment views
+    video.views += 1;
+    await video.save();
+
     res.status(200).json(video);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -127,3 +131,4 @@ export const deleteVideo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
