@@ -6,6 +6,7 @@ import { protect } from "./src/middleware/auth.middleware.js";
 import channelRoutes from "./src/routes/channel.routes.js";
 import videoRoutes from "./src/routes/video.routes.js";
 import commentRoutes from "./src/routes/comment.routes.js";
+import likeRoutes from "./src/routes/like.routes.js";
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use("/api/channels", channelRoutes);
 app.use("/api/videos", videoRoutes);
 
 app.use("/api/comments", commentRoutes);
+
+app.use("/api/likes", likeRoutes);
 
 const PORT = process.env.PORT || 8080;
 
