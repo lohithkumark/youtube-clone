@@ -37,14 +37,28 @@ export const createVideo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 export const getAllVideos = async (req, res) => {
   try {
-    const videos = await Video.find()
-      .populate("channel", "name")
-      .sort({ createdAt: -1 });
+    // Default values
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
 
-    res.status(200).json(videos);
+    const skip = (page - 1) * limit;
+
+    const videos = await Video.find()
+      .sort({ createdAt: -1 }) // latest first
+      .skip(skip)
+      .limit(limit)
+      .populate("channel", "name");
+
+    const totalVideos = await Video.countDocuments();
+
+    res.status(200).json({
+      totalVideos,
+      currentPage: page,
+      totalPages: Math.ceil(totalVideos / limit),
+      videos,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
