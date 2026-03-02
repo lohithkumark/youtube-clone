@@ -8,6 +8,8 @@ import videoRoutes from "./src/routes/video.routes.js";
 import commentRoutes from "./src/routes/comment.routes.js";
 import likeRoutes from "./src/routes/like.routes.js";
 import subscribeRoutes from "./src/routes/subscribe.routes.js";
+import historyRoutes from "./src/routes/history.routes.js";
+import dashboardRoutes from "./src/routes/dashboard.routes.js";
 
 dotenv.config();
 
@@ -41,6 +43,10 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
 
 app.use("/api/subscribe", subscribeRoutes);
+
+app.use("/api/history", historyRoutes);
+
+app.use("/api/dashboard", dashboardRoutes);
 
 const PORT = process.env.PORT || 8080;
 
