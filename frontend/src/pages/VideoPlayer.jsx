@@ -9,35 +9,34 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
   const navigate = useNavigate();
 
   const [video, setVideo] = useState(null);
-  const [relatedVideos, setRelatedVideos] = useState([]);
-  const [likes, setLikes] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
+
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    axios.get(`http://localhost:8080/api/videos/${id}`)
+    axios
+      .get(`http://localhost:8080/api/videos/${id}`)
       .then((res) => setVideo(res.data));
 
-    axios.get("http://localhost:8080/api/videos?limit=100")
-      .then((res) => {
-        const filtered = res.data.videos.filter((vid) => vid._id !== id);
-        setRelatedVideos(filtered.slice(0, 8));
-      });
-
-    axios.get(`http://localhost:8080/api/likes/video/${id}`)
-      .then((res) => setLikes(res.data.totalLikes));
-
+    fetchComments();
   }, [id]);
 
-  const handleSubscribe = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  const fetchComments = () => {
+    axios
+      .get(`http://localhost:8080/api/comments/video/${id}`)
+      .then((res) => setComments(res.data))
+      .catch((err) => console.log(err));
+  };
 
-      const res = await axios.post(
-        "http://localhost:8080/api/subscriptions",
-        { channelId: video.channel._id },
+  const handleCommentSubmit = async () => {
+    if (!commentText.trim()) return;
+
+    try {
+      await axios.post(
+        "http://localhost:8080/api/comments",
+        { videoId: id, text: commentText },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,8 +44,25 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
         }
       );
 
-      setSubscribed(res.data.subscribed);
+      setCommentText("");
+      fetchComments();
+    } catch (error) {
+      console.log(error.response?.data);
+    }
+  };
 
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/comments/${commentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchComments();
     } catch (error) {
       console.log(error.response?.data);
     }
@@ -62,97 +78,96 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
         <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
-          <div style={{ display: "flex", gap: "24px" }}>
+          <div style={{ flex: 3 }}>
 
-            <div style={{ flex: 3 }}>
+            <div
+              onClick={() => navigate(-1)}
+              style={{ cursor: "pointer", marginBottom: "15px", fontWeight: "bold" }}
+            >
+              ⬅ Back
+            </div>
 
-              <div
-                onClick={() => navigate(-1)}
-                style={{ cursor: "pointer", marginBottom: "15px", fontWeight: "bold" }}
-              >
-                ⬅ Back
-              </div>
+            <video
+              src={video.videoUrl}
+              controls
+              width="100%"
+              style={{ borderRadius: "12px" }}
+            />
 
-              <video
-                src={video.videoUrl}
-                controls
-                width="100%"
-                style={{ borderRadius: "12px" }}
-              />
+            <h2 style={{ marginTop: "20px" }}>{video.title}</h2>
 
-              <div style={{ marginTop: "20px" }}>
-                <h2>{video.title}</h2>
+            {/* 🔥 COMMENT SECTION */}
+            <div
+              style={{
+                marginTop: "30px",
+                backgroundColor: "white",
+                padding: "20px",
+                borderRadius: "12px",
+              }}
+            >
+              <h3>Comments</h3>
 
-                {/* Channel + Subscribe */}
-                <div
-                  style={{
-                    marginTop: "10px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    backgroundColor: "white",
-                    padding: "15px",
-                    borderRadius: "12px",
-                  }}
-                >
-                  <div>
-                    <h4 style={{ margin: 0 }}>{video.channel?.name}</h4>
-                    <p style={{ margin: 0, color: "gray" }}>
-                      {video.channel?.description}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleSubscribe}
+              {/* Add Comment */}
+              {token && (
+                <div style={{ marginBottom: "20px" }}>
+                  <textarea
+                    placeholder="Add a comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
                     style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid #ddd",
+                      resize: "none",
+                    }}
+                  />
+                  <button
+                    onClick={handleCommentSubmit}
+                    style={{
+                      marginTop: "10px",
                       padding: "8px 16px",
                       borderRadius: "20px",
                       border: "none",
                       cursor: "pointer",
-                      backgroundColor: subscribed ? "gray" : "red",
+                      backgroundColor: "red",
                       color: "white",
-                      fontWeight: "bold",
                     }}
                   >
-                    {subscribed ? "Subscribed" : "Subscribe"}
+                    Post
                   </button>
                 </div>
+              )}
 
-              </div>
-            </div>
+              {/* Display Comments */}
+              {comments.length === 0 && <p>No comments yet.</p>}
 
-            {/* Related Videos */}
-            <div style={{ flex: 1 }}>
-              <h3>Related Videos</h3>
-              {relatedVideos.map((vid) => (
+              {comments.map((comment) => (
                 <div
-                  key={vid._id}
-                  onClick={() => navigate(`/video/${vid._id}`)}
+                  key={comment._id}
                   style={{
-                    display: "flex",
-                    gap: "10px",
                     marginBottom: "15px",
-                    cursor: "pointer",
+                    paddingBottom: "10px",
+                    borderBottom: "1px solid #eee",
                   }}
                 >
-                  <img
-                    src={vid.thumbnailUrl}
-                    alt={vid.title}
-                    style={{
-                      width: "120px",
-                      height: "70px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <div>
-                    <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>
-                      {vid.title}
-                    </p>
-                    <p style={{ margin: 0, color: "gray", fontSize: "13px" }}>
-                      {vid.channel?.name}
-                    </p>
-                  </div>
+                  <strong>{comment.user?.username}</strong>
+                  <p style={{ margin: "5px 0" }}>{comment.text}</p>
+
+                  {user?.id === comment.user?._id && (
+                    <button
+                      onClick={() => handleDeleteComment(comment._id)}
+                      style={{
+                        fontSize: "12px",
+                        background: "none",
+                        border: "none",
+                        color: "red",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
