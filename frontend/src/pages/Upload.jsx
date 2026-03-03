@@ -11,14 +11,15 @@ function Upload({ isSidebarOpen, setIsSidebarOpen }) {
   const [description, setDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [category, setCategory] = useState("");
 
   const handleUpload = async () => {
     const token = localStorage.getItem("token");
 
-    if (!title || !videoUrl) {
-      alert("Title and Video URL are required");
-      return;
-    }
+    if (!title || !videoUrl || !category) {
+  alert("Title, Video URL and Category are required");
+  return;
+}
 
     try {
       await axios.post(
@@ -28,6 +29,7 @@ function Upload({ isSidebarOpen, setIsSidebarOpen }) {
           description,
           videoUrl,
           thumbnailUrl,
+          category,
         },
         {
           headers: {
@@ -69,6 +71,21 @@ function Upload({ isSidebarOpen, setIsSidebarOpen }) {
             onChange={(e) => setDescription(e.target.value)}
             style={inputStyle}
           />
+
+
+<select
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+  style={inputStyle}
+>
+  <option value="">Select Category</option>
+  <option value="Coding">Coding</option>
+  <option value="Music">Music</option>
+  <option value="Sports">Sports</option>
+  <option value="Gaming">Gaming</option>
+  <option value="Movies">Movies</option>
+</select>
+
 
           <input
             type="text"

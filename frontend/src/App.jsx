@@ -9,6 +9,7 @@ import Subscriptions from "./pages/Subscriptions";
 import Library from "./pages/Library";
 import History from "./pages/History";
 import Upload from "./pages/Upload";
+import Channel from "./pages/Channel";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -83,6 +84,16 @@ function App() {
         setIsSidebarOpen={setIsSidebarOpen}
       />
     </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/channel/:id"
+  element={
+    <Channel
+      isSidebarOpen={isSidebarOpen}
+      setIsSidebarOpen={setIsSidebarOpen}
+    />
   }
 />
 

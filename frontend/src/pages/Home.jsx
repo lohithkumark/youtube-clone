@@ -47,13 +47,13 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
 
       <div style={{ display: "flex" }}>
         <Sidebar
-  isSidebarOpen={isSidebarOpen}
-  setIsSidebarOpen={setIsSidebarOpen}
-/>
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
 
         <div style={{ padding: "24px", flex: 1 }}>
           
-          {/* Category Buttons */}
+          {/* CATEGORY BUTTONS */}
           <div
             style={{
               marginBottom: "20px",
@@ -82,7 +82,7 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
             ))}
           </div>
 
-          {/* Grid */}
+          {/* VIDEO GRID */}
           <div
             style={{
               display: "grid",
@@ -120,9 +120,22 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
 
                 <div style={{ marginTop: "10px" }}>
                   <h4>{video.title}</h4>
-                  <p style={{ color: "gray", margin: 0 }}>
+
+                  {/* CLICKABLE CHANNEL NAME */}
+                  <p
+                    style={{
+                      color: "gray",
+                      margin: 0,
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/channel/${video.channel?._id}`);
+                    }}
+                  >
                     {video.channel?.name}
                   </p>
+
                   <p style={{ color: "gray", margin: 0 }}>
                     {video.views} views
                   </p>
