@@ -5,9 +5,10 @@ function Header({ setIsSidebarOpen }) {
 
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
-const user = storedUser && storedUser !== "undefined"
-  ? JSON.parse(storedUser)
-  : null;
+  const user =
+    storedUser && storedUser !== "undefined"
+      ? JSON.parse(storedUser)
+      : null;
 
   return (
     <div
@@ -41,8 +42,24 @@ const user = storedUser && storedUser !== "undefined"
       {/* RIGHT SIDE */}
       {token && user ? (
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          
+          {/* Upload Button */}
+          <button
+            onClick={() => navigate("/upload")}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "20px",
+              cursor: "pointer",
+              backgroundColor: "red",
+              color: "white",
+              border: "none",
+            }}
+          >
+            Upload
+          </button>
+
           <span style={{ fontWeight: "bold" }}>
-            👤 {user.name}
+            👤 {user.username}
           </span>
 
           <button

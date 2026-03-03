@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Subscriptions from "./pages/Subscriptions";
 import Library from "./pages/Library";
 import History from "./pages/History";
+import Upload from "./pages/Upload";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -69,6 +70,18 @@ function App() {
   element={
     <ProtectedRoute>
       <History />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/upload"
+  element={
+    <ProtectedRoute>
+      <Upload
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
     </ProtectedRoute>
   }
 />
