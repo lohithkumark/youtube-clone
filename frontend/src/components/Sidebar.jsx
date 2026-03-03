@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 function Sidebar({ isSidebarOpen }) {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -12,10 +16,24 @@ function Sidebar({ isSidebarOpen }) {
     >
       {isSidebarOpen && (
         <>
-          <p style={{ cursor: "pointer" }}>Home</p>
-          <p style={{ cursor: "pointer" }}>Subscriptions</p>
-          <p style={{ cursor: "pointer" }}>Library</p>
-          <p style={{ cursor: "pointer" }}>History</p>
+          <p
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/")}
+          >
+            Home
+          </p>
+
+          <p style={{ cursor: "pointer" }}>
+            Subscriptions
+          </p>
+
+          <p style={{ cursor: "pointer" }}>
+            Library
+          </p>
+
+          <p style={{ cursor: "pointer" }}>
+            History
+          </p>
         </>
       )}
     </div>
