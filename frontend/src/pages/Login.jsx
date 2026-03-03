@@ -15,6 +15,8 @@ function Login() {
       );
 
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
       navigate("/");
     } catch {
       alert("Invalid credentials");
@@ -22,31 +24,83 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: "40px", textAlign: "center" }}>
-      <h2>Login</h2>
-
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-        style={{ display: "block", margin: "10px auto" }}
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-        style={{ display: "block", margin: "10px auto" }}
-      />
-
-      <button onClick={handleLogin}>Login</button>
-
-      <p
-        style={{ marginTop: "15px", cursor: "pointer", color: "blue" }}
-        onClick={() => navigate("/signup")}
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f9f9f9",
+      }}
+    >
+      <div
+        style={{
+          width: "350px",
+          backgroundColor: "white",
+          padding: "40px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          textAlign: "center",
+        }}
       >
-        New user? Signup
-      </p>
+        <h2 style={{ marginBottom: "20px" }}>Login</h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            borderRadius: "8px",
+            border: "1px solid #ddd",
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "20px",
+            borderRadius: "8px",
+            border: "1px solid #ddd",
+          }}
+        />
+
+        <button
+          onClick={handleLogin}
+          style={{
+            width: "100%",
+            padding: "10px",
+            backgroundColor: "red",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Login
+        </button>
+
+        <p
+          style={{
+            marginTop: "20px",
+            fontSize: "14px",
+            cursor: "pointer",
+            color: "blue",
+          }}
+          onClick={() => navigate("/signup")}
+        >
+          New user? Signup
+        </p>
+      </div>
     </div>
   );
 }
