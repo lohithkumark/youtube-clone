@@ -46,7 +46,10 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
       <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar isSidebarOpen={isSidebarOpen} />
+        <Sidebar
+  isSidebarOpen={isSidebarOpen}
+  setIsSidebarOpen={setIsSidebarOpen}
+/>
 
         <div style={{ padding: "24px", flex: 1 }}>
           

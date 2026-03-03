@@ -1,7 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-function Sidebar({ isSidebarOpen }) {
+function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const menuItems = [
+    { name: "Home", path: "/", icon: "🏠" },
+    { name: "Subscriptions", path: "/subscriptions", icon: "📺" },
+    { name: "Library", path: "/library", icon: "📚" },
+    { name: "History", path: "/history", icon: "🕒" },
+  ];
 
   return (
     <div
@@ -14,28 +22,31 @@ function Sidebar({ isSidebarOpen }) {
         padding: isSidebarOpen ? "20px" : "0px",
       }}
     >
-      {isSidebarOpen && (
-        <>
-          <p
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}
+      {isSidebarOpen &&
+        menuItems.map((item) => (
+          <div
+            key={item.name}
+            onClick={() => {
+              navigate(item.path);
+              setIsSidebarOpen(false); // 🔥 auto close
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "10px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              backgroundColor:
+                location.pathname === item.path ? "#eee" : "transparent",
+              fontWeight:
+                location.pathname === item.path ? "bold" : "normal",
+            }}
           >
-            Home
-          </p>
-
-          <p style={{ cursor: "pointer" }}>
-            Subscriptions
-          </p>
-
-          <p style={{ cursor: "pointer" }}>
-            Library
-          </p>
-
-          <p style={{ cursor: "pointer" }}>
-            History
-          </p>
-        </>
-      )}
+            <span>{item.icon}</span>
+            <span>{item.name}</span>
+          </div>
+        ))}
     </div>
   );
 }
