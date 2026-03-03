@@ -1,8 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
+function Sidebar({ isSidebarOpen, darkMode }) {
   const navigate = useNavigate();
   const location = useLocation();
+
+  if (!isSidebarOpen) return null;
 
   const menuItems = [
     { name: "Home", path: "/", icon: "🏠" },
@@ -14,39 +16,44 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   return (
     <div
       style={{
-        width: isSidebarOpen ? "200px" : "0px",
-        overflow: "hidden",
-        transition: "width 0.3s ease",
-        backgroundColor: "white",
-        borderRight: "1px solid #ddd",
-        padding: isSidebarOpen ? "20px" : "0px",
+        width: "220px",
+        backgroundColor: darkMode ? "#0f0f0f" : "#f2f2f2",
+        color: darkMode ? "white" : "black",
+        minHeight: "100vh",
+        paddingTop: "20px",
+        borderRight: darkMode ? "1px solid #222" : "1px solid #ddd",
       }}
     >
-      {isSidebarOpen &&
-        menuItems.map((item) => (
+      {menuItems.map((item) => {
+        const isActive = location.pathname === item.path;
+
+        return (
           <div
             key={item.name}
-            onClick={() => {
-              navigate(item.path);
-              setIsSidebarOpen(false); // 🔥 auto close
-            }}
+            onClick={() => navigate(item.path)}
             style={{
               display: "flex",
               alignItems: "center",
               gap: "10px",
-              padding: "10px",
-              borderRadius: "8px",
+              padding: "12px 20px",
               cursor: "pointer",
-              backgroundColor:
-                location.pathname === item.path ? "#eee" : "transparent",
-              fontWeight:
-                location.pathname === item.path ? "bold" : "normal",
+              borderRadius: "10px",
+              margin: "5px 10px",
+              backgroundColor: isActive
+                ? darkMode
+                  ? "#272727"
+                  : "#e5e5e5"
+                : "transparent",
+              transition: "all 0.2s ease",
             }}
           >
             <span>{item.icon}</span>
-            <span>{item.name}</span>
+            <span style={{ fontSize: "15px", fontWeight: "500" }}>
+              {item.name}
+            </span>
           </div>
-        ))}
+        );
+      })}
     </div>
   );
 }

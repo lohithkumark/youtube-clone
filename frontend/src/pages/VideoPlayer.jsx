@@ -4,7 +4,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
+function VideoPlayer({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  darkMode,
+  setDarkMode,
+}) {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -25,7 +30,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     fetchComments();
   }, [id]);
 
-  // ================= FETCH VIDEO =================
   const fetchVideo = async () => {
     try {
       const res = await axios.get(
@@ -37,7 +41,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     }
   };
 
-  // ================= FETCH RELATED =================
   const fetchRelatedVideos = async () => {
     try {
       const res = await axios.get(
@@ -52,7 +55,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     }
   };
 
-  // ================= LIKES =================
   const fetchLikes = async () => {
     try {
       const res = await axios.get(
@@ -64,50 +66,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     }
   };
 
-  const handleLike = async () => {
-    if (!token) {
-      alert("Login required");
-      return;
-    }
-
-    try {
-      await axios.post(
-        "http://localhost:8080/api/likes",
-        { videoId: id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      fetchLikes();
-    } catch (error) {
-      console.log(error.response?.data);
-    }
-  };
-
-  // ================= SUBSCRIBE =================
-  const handleSubscribe = async () => {
-    if (!token) {
-      alert("Login required");
-      return;
-    }
-
-    try {
-      const res = await axios.post(
-        "http://localhost:8080/api/subscriptions",
-        { channelId: video.channel._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setSubscribed(res.data.subscribed);
-    } catch (error) {
-      console.log(error.response?.data);
-    }
-  };
-
-  // ================= COMMENTS =================
   const fetchComments = async () => {
     try {
       const res = await axios.get(
@@ -119,21 +77,46 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     }
   };
 
-  const handleCommentSubmit = async () => {
-    if (!token) {
-      alert("Login required");
-      return;
-    }
+  const handleLike = async () => {
+    if (!token) return alert("Login required");
 
+    try {
+      await axios.post(
+        "http://localhost:8080/api/likes",
+        { videoId: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchLikes();
+    } catch (error) {
+      console.log(error.response?.data);
+    }
+  };
+
+  const handleSubscribe = async () => {
+    if (!token) return alert("Login required");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/api/subscriptions",
+        { channelId: video.channel._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSubscribed(res.data.subscribed);
+    } catch (error) {
+      console.log(error.response?.data);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!token) return alert("Login required");
     if (!commentText.trim()) return;
 
     try {
       await axios.post(
         "http://localhost:8080/api/comments",
         { videoId: id, text: commentText },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setCommentText("");
@@ -147,18 +130,14 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     try {
       await axios.delete(
         `http://localhost:8080/api/comments/${commentId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       fetchComments();
     } catch (error) {
       console.log(error.response?.data);
     }
   };
 
-  // ================= FORMAT VIEWS =================
   const formatViews = (num) => {
     if (!num) return "0 views";
     if (num >= 1000000)
@@ -168,22 +147,35 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
     return num + " views";
   };
 
-  if (!video) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
+  if (!video)
+    return <h2 style={{ padding: "20px" }}>Loading...</h2>;
 
   return (
-    <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
-      <Header setIsSidebarOpen={setIsSidebarOpen} />
+    <div
+      style={{
+        backgroundColor: darkMode ? "#0f0f0f" : "#f9f9f9",
+        color: darkMode ? "white" : "black",
+        minHeight: "100vh",
+      }}
+    >
+      <Header
+        setIsSidebarOpen={setIsSidebarOpen}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+      />
 
       <div style={{ display: "flex" }}>
-        <Sidebar isSidebarOpen={isSidebarOpen} />
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          darkMode={darkMode}
+        />
 
         <div style={{ padding: "24px", flex: 1 }}>
           <div style={{ display: "flex", gap: "24px" }}>
 
-            {/* LEFT SECTION */}
+            {/* LEFT */}
             <div style={{ flex: 3 }}>
 
-              {/* Back Button */}
               <div
                 onClick={() => navigate(-1)}
                 style={{
@@ -195,7 +187,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                 ⬅ Back
               </div>
 
-              {/* Video Player */}
               <video
                 src={video.videoUrl}
                 controls
@@ -207,11 +198,10 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                 {video.title}
               </h2>
 
-              <p style={{ color: "gray" }}>
+              <p style={{ color: darkMode ? "#aaa" : "gray" }}>
                 {formatViews(video.views)}
               </p>
 
-              {/* Like Button */}
               <button
                 onClick={handleLike}
                 style={{
@@ -219,20 +209,25 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                   borderRadius: "20px",
                   border: "none",
                   cursor: "pointer",
-                  backgroundColor: "#eee",
+                  backgroundColor: darkMode
+                    ? "#272727"
+                    : "#eee",
+                  color: darkMode ? "white" : "black",
                   marginTop: "10px",
                 }}
               >
                 👍 {likes}
               </button>
 
-              {/* Channel + Subscribe */}
+              {/* Channel */}
               {video.channel && (
                 <div
                   style={{
                     marginTop: "20px",
                     padding: "15px",
-                    backgroundColor: "white",
+                    backgroundColor: darkMode
+                      ? "#181818"
+                      : "white",
                     borderRadius: "12px",
                     display: "flex",
                     justifyContent: "space-between",
@@ -243,12 +238,21 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                     <h4
                       style={{ cursor: "pointer", margin: 0 }}
                       onClick={() =>
-                        navigate(`/channel/${video.channel._id}`)
+                        navigate(
+                          `/channel/${video.channel._id}`
+                        )
                       }
                     >
                       {video.channel.name}
                     </h4>
-                    <p style={{ margin: 0, color: "gray" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: darkMode
+                          ? "#aaa"
+                          : "gray",
+                      }}
+                    >
                       {video.channel.description}
                     </p>
                   </div>
@@ -278,7 +282,9 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
               <div
                 style={{
                   marginTop: "30px",
-                  backgroundColor: "white",
+                  backgroundColor: darkMode
+                    ? "#181818"
+                    : "white",
                   padding: "20px",
                   borderRadius: "12px",
                 }}
@@ -297,7 +303,13 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                         width: "100%",
                         padding: "10px",
                         borderRadius: "8px",
-                        border: "1px solid #ddd",
+                        border: "1px solid #333",
+                        backgroundColor: darkMode
+                          ? "#272727"
+                          : "white",
+                        color: darkMode
+                          ? "white"
+                          : "black",
                         resize: "none",
                       }}
                     />
@@ -319,16 +331,14 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                   </>
                 )}
 
-                {comments.length === 0 && (
-                  <p>No comments yet.</p>
-                )}
-
                 {comments.map((comment) => (
                   <div
                     key={comment._id}
                     style={{
                       marginTop: "15px",
-                      borderBottom: "1px solid #eee",
+                      borderBottom: darkMode
+                        ? "1px solid #333"
+                        : "1px solid #eee",
                       paddingBottom: "10px",
                     }}
                   >
@@ -337,10 +347,13 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                     </strong>
                     <p>{comment.text}</p>
 
-                    {user?.id === comment.user?._id && (
+                    {user?.id ===
+                      comment.user?._id && (
                       <button
                         onClick={() =>
-                          handleDeleteComment(comment._id)
+                          handleDeleteComment(
+                            comment._id
+                          )
                         }
                         style={{
                           fontSize: "12px",
@@ -359,7 +372,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
 
             </div>
 
-            {/* RIGHT SECTION */}
+            {/* RIGHT */}
             <div style={{ flex: 1 }}>
               <h3>Related Videos</h3>
 
@@ -399,7 +412,9 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                     <p
                       style={{
                         margin: 0,
-                        color: "gray",
+                        color: darkMode
+                          ? "#aaa"
+                          : "gray",
                         fontSize: "13px",
                       }}
                     >

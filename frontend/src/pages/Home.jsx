@@ -4,7 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-function Home({ isSidebarOpen, setIsSidebarOpen }) {
+function Home({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  darkMode,
+  setDarkMode,
+}) {
   const [videos, setVideos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -42,13 +47,24 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
         );
 
   return (
-    <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
-      <Header setIsSidebarOpen={setIsSidebarOpen} />
+    <div
+      style={{
+        backgroundColor: darkMode ? "#0f0f0f" : "#f9f9f9",
+        color: darkMode ? "white" : "black",
+        minHeight: "100vh",
+      }}
+    >
+      <Header
+        setIsSidebarOpen={setIsSidebarOpen}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+      />
 
       <div style={{ display: "flex" }}>
         <Sidebar
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
+          darkMode={darkMode}
         />
 
         <div style={{ padding: "24px", flex: 1 }}>
@@ -72,9 +88,21 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
                   border: "none",
                   cursor: "pointer",
                   backgroundColor:
-                    selectedCategory === cat ? "black" : "#f2f2f2",
+                    selectedCategory === cat
+                      ? darkMode
+                        ? "white"
+                        : "black"
+                      : darkMode
+                      ? "#272727"
+                      : "#f2f2f2",
                   color:
-                    selectedCategory === cat ? "white" : "black",
+                    selectedCategory === cat
+                      ? darkMode
+                        ? "black"
+                        : "white"
+                      : darkMode
+                      ? "white"
+                      : "black",
                 }}
               >
                 {cat}
@@ -97,16 +125,23 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
                 onClick={() => navigate(`/video/${video._id}`)}
                 style={{
                   cursor: "pointer",
-                  backgroundColor: "white",
+                  backgroundColor: darkMode
+                    ? "#181818"
+                    : "white",
                   padding: "10px",
                   borderRadius: "12px",
-                  transition: "transform 0.2s ease",
+                  boxShadow: darkMode
+                    ? "0 2px 8px rgba(0,0,0,0.5)"
+                    : "0 2px 8px rgba(0,0,0,0.1)",
+                  transition: "all 0.2s ease",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "scale(1.03)")
+                  (e.currentTarget.style.transform =
+                    "scale(1.03)")
                 }
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
+                  (e.currentTarget.style.transform =
+                    "scale(1)")
                 }
               >
                 <img
@@ -115,28 +150,46 @@ function Home({ isSidebarOpen, setIsSidebarOpen }) {
                   style={{
                     width: "100%",
                     borderRadius: "12px",
+                    objectFit: "cover",
                   }}
                 />
 
                 <div style={{ marginTop: "10px" }}>
-                  <h4>{video.title}</h4>
+                  <h4
+                    style={{
+                      margin: "5px 0",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {video.title}
+                  </h4>
 
                   {/* CLICKABLE CHANNEL NAME */}
                   <p
                     style={{
-                      color: "gray",
+                      color: darkMode ? "#aaa" : "gray",
                       margin: 0,
                       cursor: "pointer",
+                      fontSize: "14px",
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/channel/${video.channel?._id}`);
+                      navigate(
+                        `/channel/${video.channel?._id}`
+                      );
                     }}
                   >
                     {video.channel?.name}
                   </p>
 
-                  <p style={{ color: "gray", margin: 0 }}>
+                  <p
+                    style={{
+                      color: darkMode ? "#aaa" : "gray",
+                      margin: 0,
+                      fontSize: "13px",
+                    }}
+                  >
                     {video.views} views
                   </p>
                 </div>
