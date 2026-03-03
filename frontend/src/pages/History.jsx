@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import BackButton from "../components/BackButton";
 
 function History({ isSidebarOpen, setIsSidebarOpen }) {
   const [history, setHistory] = useState([]);
@@ -13,13 +14,9 @@ function History({ isSidebarOpen, setIsSidebarOpen }) {
 
     axios
       .get("http://localhost:8080/api/history", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => {
-        setHistory(res.data);
-      })
+      .then((res) => setHistory(res.data))
       .catch((err) => console.log(err));
   }, []);
 
@@ -28,12 +25,11 @@ function History({ isSidebarOpen, setIsSidebarOpen }) {
       <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+        <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
+          <BackButton />
+
           <h2>🕒 Watch History</h2>
 
           {history.length === 0 && <p>No watched videos yet.</p>}
