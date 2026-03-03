@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-function VideoPlayer() {
+function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -12,25 +12,20 @@ function VideoPlayer() {
   const [relatedVideos, setRelatedVideos] = useState([]);
 
   useEffect(() => {
-    // Fetch selected video
     axios
       .get(`http://localhost:8080/api/videos/${id}`)
-      .then((res) => {
-        setVideo(res.data);
-      })
+      .then((res) => setVideo(res.data))
       .catch((err) => console.log(err));
 
-    // Fetch all videos for related section
     axios
       .get("http://localhost:8080/api/videos?limit=100")
       .then((res) => {
         const filtered = res.data.videos.filter(
           (vid) => vid._id !== id
         );
-        setRelatedVideos(filtered.slice(0, 8)); // show only 8
+        setRelatedVideos(filtered.slice(0, 8));
       })
       .catch((err) => console.log(err));
-
   }, [id]);
 
   if (!video) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
@@ -43,19 +38,17 @@ function VideoPlayer() {
 
   return (
     <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
-      <Header />
+      <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar />
+        <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
           
-          {/* Main Layout */}
           <div style={{ display: "flex", gap: "24px" }}>
 
-            {/* LEFT - Main Video */}
+            {/* LEFT */}
             <div style={{ flex: 3 }}>
-
               <video
                 src={video.videoUrl}
                 controls
@@ -96,9 +89,8 @@ function VideoPlayer() {
               </div>
             </div>
 
-            {/* RIGHT - Related Videos */}
+            {/* RIGHT - Related */}
             <div style={{ flex: 1 }}>
-
               <h3>Related Videos</h3>
 
               {relatedVideos.map((vid) => (
@@ -138,7 +130,6 @@ function VideoPlayer() {
                   </div>
                 </div>
               ))}
-
             </div>
 
           </div>

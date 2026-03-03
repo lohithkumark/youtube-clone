@@ -4,11 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-function Home() {
+function Home({ isSidebarOpen, setIsSidebarOpen }) {
   const [videos, setVideos] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const navigate = useNavigate();
   const location = useLocation();
-
   const query = new URLSearchParams(location.search).get("search");
 
   useEffect(() => {
@@ -20,33 +21,65 @@ function Home() {
       .get(url)
       .then((res) => {
         if (query) {
-          // Search API returns array directly
           setVideos(res.data);
         } else {
-          // Normal API returns object with videos
           setVideos(res.data.videos);
         }
       })
       .catch((err) => console.log(err));
   }, [query]);
 
+  const categories = ["All", "Coding", "Sports", "Movies", "Gaming", "Music"];
+
+  const filteredVideos =
+    selectedCategory === "All"
+      ? videos
+      : videos.filter(
+          (video) =>
+            video.category &&
+            video.category.toLowerCase() ===
+              selectedCategory.toLowerCase()
+        );
+
   return (
     <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
-      <Header />
+      <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar />
+        <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
           
-          {/* Search Result Title */}
-          {query && (
-            <h2 style={{ marginBottom: "20px" }}>
-              Search Results for "{query}"
-            </h2>
-          )}
+          {/* Category Buttons */}
+          <div
+            style={{
+              marginBottom: "20px",
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  padding: "6px 15px",
+                  borderRadius: "20px",
+                  border: "none",
+                  cursor: "pointer",
+                  backgroundColor:
+                    selectedCategory === cat ? "black" : "#f2f2f2",
+                  color:
+                    selectedCategory === cat ? "white" : "black",
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
 
-          {/* Grid Container */}
+          {/* Grid */}
           <div
             style={{
               display: "grid",
@@ -55,16 +88,16 @@ function Home() {
               gap: "24px",
             }}
           >
-            {videos.map((video) => (
+            {filteredVideos.map((video) => (
               <div
                 key={video._id}
                 onClick={() => navigate(`/video/${video._id}`)}
                 style={{
                   cursor: "pointer",
-                  transition: "transform 0.2s ease",
                   backgroundColor: "white",
                   padding: "10px",
                   borderRadius: "12px",
+                  transition: "transform 0.2s ease",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.transform = "scale(1.03)")
@@ -79,37 +112,15 @@ function Home() {
                   style={{
                     width: "100%",
                     borderRadius: "12px",
-                    objectFit: "cover",
                   }}
                 />
 
                 <div style={{ marginTop: "10px" }}>
-                  <h4
-                    style={{
-                      margin: "5px 0",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {video.title}
-                  </h4>
-
-                  <p
-                    style={{
-                      color: "gray",
-                      fontSize: "14px",
-                      margin: 0,
-                    }}
-                  >
+                  <h4>{video.title}</h4>
+                  <p style={{ color: "gray", margin: 0 }}>
                     {video.channel?.name}
                   </p>
-
-                  <p
-                    style={{
-                      color: "gray",
-                      fontSize: "14px",
-                      margin: 0,
-                    }}
-                  >
+                  <p style={{ color: "gray", margin: 0 }}>
                     {video.views} views
                   </p>
                 </div>
