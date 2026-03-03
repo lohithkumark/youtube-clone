@@ -1,9 +1,9 @@
 import Video from "../models/Video.js";
 import Channel from "../models/Channel.js";
 
-// ===============================
+
 // CREATE VIDEO (Protected)
-// ===============================
+
 export const createVideo = async (req, res) => {
   try {
     const { title, description, videoUrl, thumbnailUrl, category } = req.body;
@@ -15,7 +15,7 @@ export const createVideo = async (req, res) => {
     }
 
     // Find user's channel
-    const channel = await Channel.findOne({ user: req.user._id });
+    const channel = await Channel.findOne({ owner: req.user._id });
 
     if (!channel) {
       return res.status(404).json({
@@ -38,9 +38,8 @@ export const createVideo = async (req, res) => {
   }
 };
 
-// ===============================
+
 // GET ALL VIDEOS
-// ===============================
 export const getAllVideos = async (req, res) => {
   try {
     const videos = await Video.find()
@@ -53,9 +52,7 @@ export const getAllVideos = async (req, res) => {
   }
 };
 
-// ===============================
 // GET VIDEO BY ID
-// ===============================
 export const getVideoById = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id)
@@ -72,9 +69,7 @@ export const getVideoById = async (req, res) => {
   }
 };
 
-// ===============================
 // SEARCH VIDEOS
-// ===============================
 export const searchVideos = async (req, res) => {
   try {
     const query = req.query.query;
@@ -89,9 +84,7 @@ export const searchVideos = async (req, res) => {
   }
 };
 
-// ===============================
 // GET VIDEOS BY CHANNEL
-// ===============================
 export const getVideosByChannel = async (req, res) => {
   try {
     const videos = await Video.find({
@@ -106,9 +99,7 @@ export const getVideosByChannel = async (req, res) => {
   }
 };
 
-// ===============================
 // UPDATE VIDEO
-// ===============================
 export const updateVideo = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -126,9 +117,7 @@ export const updateVideo = async (req, res) => {
   }
 };
 
-// ===============================
 // DELETE VIDEO
-// ===============================
 export const deleteVideo = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);

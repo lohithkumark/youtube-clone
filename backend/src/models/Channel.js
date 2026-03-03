@@ -15,14 +15,8 @@ const channelSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    subscribersCount: {
-      type: Number,
-      default: 0,
-    },
   },
   { timestamps: true }
 );
 
-const Channel = mongoose.model("Channel", channelSchema);
-
-export default Channel;
+export default mongoose.model("Channel", channelSchema);

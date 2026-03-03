@@ -6,33 +6,38 @@ const videoSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     description: {
       type: String,
     },
-    category: {
-      type: String,
-      required: true
-    },
+
     videoUrl: {
       type: String,
       required: true,
     },
+
     thumbnailUrl: {
       type: String,
     },
+
+    category: {
+      type: String,      
+      required: true,
+      default: "Coding"
+    },
+
+    views: {
+      type: Number,
+      default: 0,
+    },
+
     channel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel",
       required: true,
     },
-    views: {
-      type: Number,
-      default: 0,
-    },
   },
   { timestamps: true }
 );
 
-const Video = mongoose.model("Video", videoSchema);
-
-export default Video;
+export default mongoose.model("Video", videoSchema);

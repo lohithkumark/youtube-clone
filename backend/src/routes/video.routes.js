@@ -21,7 +21,7 @@ router.get("/", getAllVideos);
 // Search
 router.get("/search", searchVideos);
 
-// 🔥 IMPORTANT: BEFORE :id
+// IMPORTANT: BEFORE :id
 router.get("/channel/:channelId", getVideosByChannel);
 
 // Get single

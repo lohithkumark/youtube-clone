@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import Channel from "../models/Channel.js"; // 🔥 ADD THIS
+import Channel from "../models/Channel.js"; 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -27,7 +27,7 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    // 🔥 AUTO CREATE CHANNEL
+    //  AUTO CREATE CHANNEL
     await Channel.create({
       name: `${username}'s Channel`,
       description: "Welcome to my channel!",
