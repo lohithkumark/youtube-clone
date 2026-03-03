@@ -1,19 +1,23 @@
 function Sidebar({ isSidebarOpen }) {
-  if (!isSidebarOpen) return null;
-
   return (
     <div
       style={{
-        width: "200px",
+        width: isSidebarOpen ? "200px" : "0px",
+        overflow: "hidden",
+        transition: "width 0.3s ease",
         backgroundColor: "white",
-        padding: "20px",
         borderRight: "1px solid #ddd",
+        padding: isSidebarOpen ? "20px" : "0px",
       }}
     >
-      <p>Home</p>
-      <p>Subscriptions</p>
-      <p>Library</p>
-      <p>History</p>
+      {isSidebarOpen && (
+        <>
+          <p style={{ cursor: "pointer" }}>Home</p>
+          <p style={{ cursor: "pointer" }}>Subscriptions</p>
+          <p style={{ cursor: "pointer" }}>Library</p>
+          <p style={{ cursor: "pointer" }}>History</p>
+        </>
+      )}
     </div>
   );
 }

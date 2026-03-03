@@ -44,11 +44,25 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
         <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
-          
           <div style={{ display: "flex", gap: "24px" }}>
 
-            {/* LEFT */}
+            {/* LEFT SECTION */}
             <div style={{ flex: 3 }}>
+
+              {/* 🔥 Back Button */}
+              <div
+                onClick={() => navigate(-1)}
+                style={{
+                  cursor: "pointer",
+                  marginBottom: "15px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  display: "inline-block",
+                }}
+              >
+                ⬅ Back
+              </div>
+
               <video
                 src={video.videoUrl}
                 controls
@@ -89,7 +103,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
               </div>
             </div>
 
-            {/* RIGHT - Related */}
+            {/* RIGHT SECTION - Related Videos */}
             <div style={{ flex: 1 }}>
               <h3>Related Videos</h3>
 
@@ -133,7 +147,6 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
             </div>
 
           </div>
-
         </div>
       </div>
     </div>
