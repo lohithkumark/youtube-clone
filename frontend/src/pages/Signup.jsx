@@ -3,23 +3,27 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); // we keep name in UI
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
-      await axios.post("http://localhost:8080/api/auth/register", {
-        name,
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "http://localhost:8080/api/auth/signup",
+        {
+          username: name, // 🔥 IMPORTANT: backend expects username
+          email,
+          password,
+        }
+      );
 
-      alert("Account created successfully!");
+      alert(res.data.message);
       navigate("/login");
     } catch (error) {
-      alert("Signup failed");
+      console.log("ERROR:", error.response?.data);
+      alert(error.response?.data?.message || "Signup failed");
     }
   };
 
@@ -47,7 +51,7 @@ function Signup() {
 
         <input
           type="text"
-          placeholder="Full Name"
+          placeholder="Username"
           value={name}
           onChange={(e) => setName(e.target.value)}
           style={{
