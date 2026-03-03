@@ -9,8 +9,8 @@ connectDB();
 
 const seedVideos = async () => {
   try {
-    await Video.deleteMany();
-    await Channel.deleteMany();
+    await Video.deleteMany({});
+    await Channel.deleteMany({});
 
     const user = await User.findOne();
 
@@ -19,7 +19,6 @@ const seedVideos = async () => {
       process.exit();
     }
 
-    // Create multiple channels under same user
     const channels = await Channel.insertMany([
       { name: "Tech World", description: "Tech videos", owner: user._id },
       { name: "Sports Arena", description: "Sports content", owner: user._id },
@@ -27,48 +26,77 @@ const seedVideos = async () => {
       { name: "Gaming Zone", description: "Gaming videos", owner: user._id },
       { name: "Music Beats", description: "Music channel", owner: user._id },
     ]);
-const categories = ["Coding", "Sports", "Movies", "Gaming", "Music"];
 
-const titles = [
-  "React Crash Course 2025",
-  "Node.js Complete Guide",
-  "Top 10 Football Goals",
-  "Latest Tech News Today",
-  "Epic Gaming Highlights",
-  "Best Movie Trailers 2025",
-  "Top Music Hits 2025",
-  "Learn MongoDB in 30 Minutes",
-  "Champions League Highlights",
-  "Top Coding Tricks Every Developer Should Know",
-  "JavaScript Advanced Concepts",
-  "Sports News Update",
-  "Gaming Strategy Guide",
-  "Movie Review Breakdown",
-  "Chill Music Playlist",
-];
+    const titles = [
+      "React Crash Course 2025",
+      "Node.js Complete Guide",
+      "Top 10 Football Goals",
+      "Latest Tech News Today",
+      "Epic Gaming Highlights",
+      "Best Movie Trailers 2025",
+      "Top Music Hits 2025",
+      "Learn MongoDB in 30 Minutes",
+      "Champions League Highlights",
+      "Top Coding Tricks Every Developer Should Know",
+      "JavaScript Advanced Concepts",
+      "Sports News Update",
+      "Gaming Strategy Guide",
+      "Movie Review Breakdown",
+      "Chill Music Playlist",
+    ];
 
-const videos = [];
+    const videoUrls = [
+      "https://www.w3schools.com/html/mov_bbb.mp4",
+      "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "https://media.w3.org/2010/05/sintel/trailer.mp4",
+      "https://media.w3.org/2010/05/bunny/trailer.mp4",
+      "https://media.w3.org/2010/05/video/movie_300.mp4",
+      "https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
+    ];
 
-for (let i = 0; i < 30; i++) {
-  const randomChannel =
-    channels[Math.floor(Math.random() * channels.length)];
+    const videos = [];
 
-  videos.push({
-    title: titles[i % titles.length],
-    description: "Demo video for YouTube clone project",
-    category: categories[i % categories.length],
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    thumbnailUrl: `https://picsum.photos/500/300?random=${i}`,
-    channel: randomChannel._id,
-    views: Math.floor(Math.random() * 100000),
-  });
-}
+    for (let i = 0; i < 30; i++) {
+      const title = titles[i % titles.length];
+      const lowerTitle = title.toLowerCase();
 
-await Video.insertMany(videos);
+      let category;
+
+      if (
+        lowerTitle.includes("react") ||
+        lowerTitle.includes("node") ||
+        lowerTitle.includes("coding") ||
+        lowerTitle.includes("javascript") ||
+        lowerTitle.includes("mongodb")
+      ) {
+        category = "Coding";
+      } else if (lowerTitle.includes("sports") || lowerTitle.includes("football")) {
+        category = "Sports";
+      } else if (lowerTitle.includes("gaming")) {
+        category = "Gaming";
+      } else if (lowerTitle.includes("music")) {
+        category = "Music";
+      } else {
+        category = "Movies";
+      }
+
+      const randomChannel =
+        channels[Math.floor(Math.random() * channels.length)];
+
+      videos.push({
+        title,
+        description: "Demo video for YouTube clone project",
+        category,
+        videoUrl: videoUrls[i % videoUrls.length],
+        thumbnailUrl: `https://picsum.photos/500/300?random=${i}`,
+        channel: randomChannel._id,
+        views: Math.floor(Math.random() * 100000),
+      });
+    }
 
     await Video.insertMany(videos);
 
-    console.log("Multiple channels and videos seeded!");
+    console.log("Database reseeded with correct categories!");
     process.exit();
   } catch (error) {
     console.error(error);
