@@ -11,6 +11,7 @@ import likeRoutes from "./src/routes/like.routes.js";
 import subscribeRoutes from "./src/routes/subscribe.routes.js";
 import historyRoutes from "./src/routes/history.routes.js";
 import dashboardRoutes from "./src/routes/dashboard.routes.js";
+import subscriptionRoutes from "./src/routes/subscription.routes.js";
 
 dotenv.config();
 
@@ -50,6 +51,8 @@ app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/history", historyRoutes);
 
 app.use("/api/dashboard", dashboardRoutes);
+
+app.use("/api/subscriptions", subscriptionRoutes);
 
 const PORT = process.env.PORT || 8080;
 
