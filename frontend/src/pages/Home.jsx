@@ -10,7 +10,7 @@ function Home() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/videos")
+      .get("http://localhost:8080/api/videos?limit=100")
       .then((res) => {
         setVideos(res.data.videos);
       })
