@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +6,14 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  // 🔥 Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -18,8 +26,8 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       navigate("/");
-    } catch {
-      alert("Invalid credentials");
+    } catch (error) {
+      alert(error.response?.data?.message || "Invalid credentials");
     }
   };
 
