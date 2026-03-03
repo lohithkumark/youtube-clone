@@ -5,7 +5,6 @@ import VideoPlayer from "./pages/VideoPlayer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -20,6 +19,7 @@ function App() {
           />
         }
       />
+
       <Route
         path="/video/:id"
         element={
@@ -29,6 +29,7 @@ function App() {
           />
         }
       />
+
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
     </Routes>

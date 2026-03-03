@@ -2,7 +2,9 @@ import { useNavigate } from "react-router-dom";
 
 function Header({ setIsSidebarOpen }) {
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <div
@@ -16,7 +18,7 @@ function Header({ setIsSidebarOpen }) {
         borderBottom: "1px solid #ddd",
       }}
     >
-      {/* LEFT */}
+      {/* LEFT SIDE */}
       <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
         <div
           onClick={() => setIsSidebarOpen((prev) => !prev)}
@@ -33,21 +35,28 @@ function Header({ setIsSidebarOpen }) {
         </h2>
       </div>
 
-      {/* RIGHT */}
-      {token ? (
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            window.location.reload();
-          }}
-          style={{
-            padding: "8px 16px",
-            borderRadius: "20px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
+      {/* RIGHT SIDE */}
+      {token && user ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontWeight: "bold" }}>
+            👤 {user.name}
+          </span>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.reload();
+            }}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "20px",
+              cursor: "pointer",
+            }}
+          >
+            Logout
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => navigate("/login")}
