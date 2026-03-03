@@ -1,8 +1,6 @@
 import Subscribe from "../models/Subscribe.js";
 
-// =================================
 // SUBSCRIBE / UNSUBSCRIBE
-// =================================
 export const toggleSubscription = async (req, res) => {
   try {
     const { channelId } = req.body;
@@ -44,9 +42,7 @@ export const toggleSubscription = async (req, res) => {
   }
 };
 
-// =================================
 // GET CHANNEL SUBSCRIBER COUNT
-// =================================
 export const getChannelSubscribers = async (req, res) => {
   try {
     const count = await Subscribe.countDocuments({
