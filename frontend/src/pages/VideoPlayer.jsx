@@ -12,57 +12,32 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
   const [relatedVideos, setRelatedVideos] = useState([]);
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // 1️⃣ Fetch video
-    axios
-      .get(`http://localhost:8080/api/videos/${id}`)
-      .then((res) => setVideo(res.data))
-      .catch((err) => console.log(err));
+    axios.get(`http://localhost:8080/api/videos/${id}`)
+      .then((res) => setVideo(res.data));
 
-    // 2️⃣ Fetch related videos
-    axios
-      .get("http://localhost:8080/api/videos?limit=100")
+    axios.get("http://localhost:8080/api/videos?limit=100")
       .then((res) => {
-        const filtered = res.data.videos.filter(
-          (vid) => vid._id !== id
-        );
+        const filtered = res.data.videos.filter((vid) => vid._id !== id);
         setRelatedVideos(filtered.slice(0, 8));
-      })
-      .catch((err) => console.log(err));
+      });
 
-    // 3️⃣ Fetch like count
-    axios
-      .get(`http://localhost:8080/api/likes/video/${id}`)
-      .then((res) => {
-        setLikes(res.data.totalLikes);
-      })
-      .catch((err) => console.log(err));
-
-    // 4️⃣ Add to history automatically
-    if (token) {
-      axios.post(
-        "http://localhost:8080/api/history",
-        { videoId: id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ).catch((err) => console.log(err));
-    }
+    axios.get(`http://localhost:8080/api/likes/video/${id}`)
+      .then((res) => setLikes(res.data.totalLikes));
 
   }, [id]);
 
-  const handleLike = async () => {
+  const handleSubscribe = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-        "http://localhost:8080/api/likes",
-        { videoId: id },
+        "http://localhost:8080/api/subscriptions",
+        { channelId: video.channel._id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,8 +45,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
         }
       );
 
-      setLikes(res.data.totalLikes);
-      setLiked(res.data.liked);
+      setSubscribed(res.data.subscribed);
 
     } catch (error) {
       console.log(error.response?.data);
@@ -80,37 +54,21 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
 
   if (!video) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
 
-  const formatViews = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M views";
-    if (num >= 1000) return (num / 1000).toFixed(1) + "K views";
-    return num + " views";
-  };
-
   return (
     <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
       <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+        <Sidebar isSidebarOpen={isSidebarOpen} />
 
         <div style={{ padding: "24px", flex: 1 }}>
           <div style={{ display: "flex", gap: "24px" }}>
 
-            {/* LEFT SECTION */}
             <div style={{ flex: 3 }}>
 
-              {/* Back Button */}
               <div
                 onClick={() => navigate(-1)}
-                style={{
-                  cursor: "pointer",
-                  marginBottom: "15px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                }}
+                style={{ cursor: "pointer", marginBottom: "15px", fontWeight: "bold" }}
               >
                 ⬅ Back
               </div>
@@ -125,59 +83,47 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
               <div style={{ marginTop: "20px" }}>
                 <h2>{video.title}</h2>
 
-                <p style={{ color: "gray" }}>
-                  {formatViews(video.views)}
-                </p>
+                {/* Channel + Subscribe */}
+                <div
+                  style={{
+                    marginTop: "10px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    backgroundColor: "white",
+                    padding: "15px",
+                    borderRadius: "12px",
+                  }}
+                >
+                  <div>
+                    <h4 style={{ margin: 0 }}>{video.channel?.name}</h4>
+                    <p style={{ margin: 0, color: "gray" }}>
+                      {video.channel?.description}
+                    </p>
+                  </div>
 
-                {/* Like Button */}
-                <div style={{ marginTop: "10px" }}>
                   <button
-                    onClick={handleLike}
+                    onClick={handleSubscribe}
                     style={{
-                      padding: "8px 15px",
+                      padding: "8px 16px",
                       borderRadius: "20px",
                       border: "none",
                       cursor: "pointer",
-                      backgroundColor: liked ? "red" : "#eee",
-                      color: liked ? "white" : "black",
+                      backgroundColor: subscribed ? "gray" : "red",
+                      color: "white",
+                      fontWeight: "bold",
                     }}
                   >
-                    👍 {likes}
+                    {subscribed ? "Subscribed" : "Subscribe"}
                   </button>
                 </div>
 
-                {/* Channel Info */}
-                <div
-                  style={{
-                    marginTop: "15px",
-                    padding: "15px",
-                    backgroundColor: "white",
-                    borderRadius: "12px",
-                  }}
-                >
-                  <h4>{video.channel?.name}</h4>
-                  <p>{video.channel?.description}</p>
-                </div>
-
-                {/* Description */}
-                <div
-                  style={{
-                    marginTop: "20px",
-                    padding: "15px",
-                    backgroundColor: "white",
-                    borderRadius: "12px",
-                  }}
-                >
-                  <h4>Description</h4>
-                  <p>{video.description}</p>
-                </div>
               </div>
             </div>
 
-            {/* RIGHT SECTION - Related */}
+            {/* Related Videos */}
             <div style={{ flex: 1 }}>
               <h3>Related Videos</h3>
-
               {relatedVideos.map((vid) => (
                 <div
                   key={vid._id}
@@ -199,18 +145,12 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                       borderRadius: "8px",
                     }}
                   />
-
                   <div>
                     <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>
                       {vid.title}
                     </p>
-
                     <p style={{ margin: 0, color: "gray", fontSize: "13px" }}>
                       {vid.channel?.name}
-                    </p>
-
-                    <p style={{ margin: 0, color: "gray", fontSize: "13px" }}>
-                      {formatViews(vid.views)}
                     </p>
                   </div>
                 </div>
