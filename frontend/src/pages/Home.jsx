@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
 function Home() {
   const [videos, setVideos] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search).get("search");
 
   useEffect(() => {
+    const url = query
+      ? `http://localhost:8080/api/videos/search?query=${query}`
+      : "http://localhost:8080/api/videos?limit=100";
+
     axios
-      .get("http://localhost:8080/api/videos?limit=100")
+      .get(url)
       .then((res) => {
-        setVideos(res.data.videos);
+        if (query) {
+          // Search API returns array directly
+          setVideos(res.data);
+        } else {
+          // Normal API returns object with videos
+          setVideos(res.data.videos);
+        }
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [query]);
 
   return (
     <div style={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
@@ -26,6 +39,13 @@ function Home() {
 
         <div style={{ padding: "24px", flex: 1 }}>
           
+          {/* Search Result Title */}
+          {query && (
+            <h2 style={{ marginBottom: "20px" }}>
+              Search Results for "{query}"
+            </h2>
+          )}
+
           {/* Grid Container */}
           <div
             style={{
@@ -53,7 +73,6 @@ function Home() {
                   (e.currentTarget.style.transform = "scale(1)")
                 }
               >
-                {/* Thumbnail */}
                 <img
                   src={video.thumbnailUrl}
                   alt={video.title}
@@ -64,7 +83,6 @@ function Home() {
                   }}
                 />
 
-                {/* Video Info */}
                 <div style={{ marginTop: "10px" }}>
                   <h4
                     style={{
