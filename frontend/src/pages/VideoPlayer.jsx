@@ -9,7 +9,7 @@ function VideoPlayer() {
   const navigate = useNavigate();
 
   const [video, setVideo] = useState(null);
-  const [recommended, setRecommended] = useState([]);
+  const [relatedVideos, setRelatedVideos] = useState([]);
 
   useEffect(() => {
     // Fetch selected video
@@ -20,13 +20,17 @@ function VideoPlayer() {
       })
       .catch((err) => console.log(err));
 
-    // Fetch recommended videos
+    // Fetch all videos for related section
     axios
-      .get("http://localhost:8080/api/videos?limit=10")
+      .get("http://localhost:8080/api/videos?limit=100")
       .then((res) => {
-        setRecommended(res.data.videos);
+        const filtered = res.data.videos.filter(
+          (vid) => vid._id !== id
+        );
+        setRelatedVideos(filtered.slice(0, 8)); // show only 8
       })
       .catch((err) => console.log(err));
+
   }, [id]);
 
   if (!video) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
@@ -44,90 +48,63 @@ function VideoPlayer() {
       <div style={{ display: "flex" }}>
         <Sidebar />
 
-        <div style={{ display: "flex", padding: "24px", flex: 1, gap: "30px" }}>
+        <div style={{ padding: "24px", flex: 1 }}>
           
-          {/* LEFT SIDE - MAIN VIDEO */}
-          <div style={{ flex: 3 }}>
-            <video
-              src={video.videoUrl}
-              controls
-              width="100%"
-              style={{ borderRadius: "12px" }}
-            />
+          {/* Main Layout */}
+          <div style={{ display: "flex", gap: "24px" }}>
 
-            <div style={{ marginTop: "15px" }}>
-              <h2>{video.title}</h2>
+            {/* LEFT - Main Video */}
+            <div style={{ flex: 3 }}>
 
-              <p style={{ color: "gray" }}>
-                {formatViews(video.views)} • 2 days ago
-              </p>
+              <video
+                src={video.videoUrl}
+                controls
+                width="100%"
+                style={{ borderRadius: "12px" }}
+              />
 
-              {/* Like & Subscribe */}
-              <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-                <button
+              <div style={{ marginTop: "20px" }}>
+                <h2>{video.title}</h2>
+
+                <p style={{ color: "gray" }}>
+                  {formatViews(video.views)}
+                </p>
+
+                <div
                   style={{
-                    padding: "8px 16px",
-                    borderRadius: "20px",
-                    border: "none",
-                    backgroundColor: "#f2f2f2",
-                    cursor: "pointer",
+                    marginTop: "15px",
+                    padding: "15px",
+                    backgroundColor: "white",
+                    borderRadius: "12px",
                   }}
                 >
-                  👍 Like
-                </button>
+                  <h4>{video.channel?.name}</h4>
+                  <p>{video.channel?.description}</p>
+                </div>
 
-                <button
+                <div
                   style={{
-                    padding: "8px 16px",
-                    borderRadius: "20px",
-                    border: "none",
-                    backgroundColor: "red",
-                    color: "white",
-                    cursor: "pointer",
+                    marginTop: "20px",
+                    padding: "15px",
+                    backgroundColor: "white",
+                    borderRadius: "12px",
                   }}
                 >
-                  Subscribe
-                </button>
-              </div>
-
-              {/* Channel Info */}
-              <div
-                style={{
-                  marginTop: "20px",
-                  padding: "15px",
-                  backgroundColor: "white",
-                  borderRadius: "12px",
-                }}
-              >
-                <h4>{video.channel?.name}</h4>
-                <p>{video.channel?.description}</p>
-              </div>
-
-              {/* Description */}
-              <div
-                style={{
-                  marginTop: "20px",
-                  padding: "15px",
-                  backgroundColor: "white",
-                  borderRadius: "12px",
-                }}
-              >
-                <h4>Description</h4>
-                <p>{video.description}</p>
+                  <h4>Description</h4>
+                  <p>{video.description}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* RIGHT SIDE - RECOMMENDED VIDEOS */}
-          <div style={{ flex: 1 }}>
-            <h3>Recommended</h3>
+            {/* RIGHT - Related Videos */}
+            <div style={{ flex: 1 }}>
 
-            {recommended
-              .filter((item) => item._id !== id)
-              .map((item) => (
+              <h3>Related Videos</h3>
+
+              {relatedVideos.map((vid) => (
                 <div
-                  key={item._id}
-                  onClick={() => navigate(`/video/${item._id}`)}
+                  key={vid._id}
+                  onClick={() => navigate(`/video/${vid._id}`)}
                   style={{
                     display: "flex",
                     gap: "10px",
@@ -136,25 +113,34 @@ function VideoPlayer() {
                   }}
                 >
                   <img
-                    src={item.thumbnailUrl}
-                    alt={item.title}
-                    width="120"
-                    style={{ borderRadius: "8px" }}
+                    src={vid.thumbnailUrl}
+                    alt={vid.title}
+                    style={{
+                      width: "120px",
+                      height: "70px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
                   />
 
                   <div>
-                    <p style={{ margin: 0, fontWeight: "bold" }}>
-                      {item.title}
+                    <p style={{ margin: 0, fontWeight: "bold", fontSize: "14px" }}>
+                      {vid.title}
                     </p>
-                    <p style={{ margin: 0, fontSize: "12px", color: "gray" }}>
-                      {item.channel?.name}
+
+                    <p style={{ margin: 0, color: "gray", fontSize: "13px" }}>
+                      {vid.channel?.name}
                     </p>
-                    <p style={{ margin: 0, fontSize: "12px", color: "gray" }}>
-                      {formatViews(item.views)}
+
+                    <p style={{ margin: 0, color: "gray", fontSize: "13px" }}>
+                      {formatViews(vid.views)}
                     </p>
                   </div>
                 </div>
               ))}
+
+            </div>
+
           </div>
 
         </div>
