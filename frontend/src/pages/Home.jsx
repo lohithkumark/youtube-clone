@@ -17,24 +17,42 @@ function Home({
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("search");
 
+  // ================= FETCH VIDEOS =================
   useEffect(() => {
-    const url = query
-      ? `http://localhost:8080/api/videos/search?query=${query}`
-      : "http://localhost:8080/api/videos?limit=100";
+    const fetchVideos = async () => {
+      try {
+        const url = query
+          ? `http://localhost:8080/api/videos/search?query=${query}`
+          : "http://localhost:8080/api/videos?limit=100";
 
-    axios
-      .get(url)
-      .then((res) => {
-        if (query) {
-          setVideos(res.data);
-        } else {
-          setVideos(res.data.videos);
-        }
-      })
-      .catch((err) => console.log(err));
+        const res = await axios.get(url);
+
+        // Backend returns: { videos: [...] }
+        setVideos(res.data.videos || []);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchVideos();
   }, [query]);
 
-  const categories = ["All", "Coding", "Sports", "Movies", "Gaming", "Music"];
+  // ================= FORMAT VIEWS =================
+  const formatViews = (num) => {
+    if (!num) return "0";
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+    return num;
+  };
+
+  const categories = [
+    "All",
+    "Coding",
+    "Sports",
+    "Movies",
+    "Gaming",
+    "Music",
+  ];
 
   const filteredVideos =
     selectedCategory === "All"
@@ -165,7 +183,7 @@ function Home({
                     {video.title}
                   </h4>
 
-                  {/* CLICKABLE CHANNEL NAME */}
+                  {/* CHANNEL NAME */}
                   <p
                     style={{
                       color: darkMode ? "#aaa" : "gray",
@@ -190,7 +208,7 @@ function Home({
                       fontSize: "13px",
                     }}
                   >
-                    {video.views} views
+                    {formatViews(video.views)} views
                   </p>
                 </div>
               </div>

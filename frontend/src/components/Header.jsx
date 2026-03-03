@@ -68,86 +68,103 @@ function Header({
       </div>
 
       {/* RIGHT SIDE */}
+      {/* RIGHT SIDE */}
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
+  }}
+>
+  {/* Upload Button (only when logged in) */}
+  {token && (
+    <button
+      onClick={() => navigate("/upload")}
+      style={{
+        padding: "6px 15px",
+        borderRadius: "20px",
+        border: "none",
+        cursor: "pointer",
+        backgroundColor: "red",
+        color: "white",
+        fontWeight: "600",
+      }}
+    >
+      ⬆ Upload
+    </button>
+  )}
+
+  {/* Dark Mode Toggle */}
+  <button
+    onClick={() => setDarkMode((prev) => !prev)}
+    style={{
+      padding: "6px 12px",
+      borderRadius: "20px",
+      border: "none",
+      cursor: "pointer",
+      backgroundColor: darkMode
+        ? "#272727"
+        : "#f2f2f2",
+      color: darkMode ? "white" : "black",
+      fontWeight: "500",
+    }}
+  >
+    {darkMode ? "☀ Light" : "🌙 Dark"}
+  </button>
+
+  {/* User Section */}
+  {token && user ? (
+    <>
       <div
         style={{
+          backgroundColor: "#cc0000",
+          color: "white",
+          width: "35px",
+          height: "35px",
+          borderRadius: "50%",
           display: "flex",
           alignItems: "center",
-          gap: "15px",
+          justifyContent: "center",
+          fontWeight: "bold",
         }}
       >
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={() =>
-            setDarkMode((prev) => !prev)
-          }
-          style={{
-            padding: "6px 12px",
-            borderRadius: "20px",
-            border: "none",
-            cursor: "pointer",
-            backgroundColor: darkMode
-              ? "#272727"
-              : "#f2f2f2",
-            color: darkMode ? "white" : "black",
-            fontWeight: "500",
-          }}
-        >
-          {darkMode ? "☀ Light" : "🌙 Dark"}
-        </button>
-
-        {/* User Section */}
-        {token && user ? (
-          <>
-            <div
-              style={{
-                backgroundColor: "#cc0000",
-                color: "white",
-                width: "35px",
-                height: "35px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}
-            >
-              {user.username?.charAt(0).toUpperCase()}
-            </div>
-
-            <button
-              onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                window.location.reload();
-              }}
-              style={{
-                padding: "6px 12px",
-                borderRadius: "20px",
-                border: "none",
-                cursor: "pointer",
-                backgroundColor: "#eee",
-              }}
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={() => navigate("/login")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "20px",
-              border: "none",
-              cursor: "pointer",
-              backgroundColor: "#065fd4",
-              color: "white",
-              fontWeight: "bold",
-            }}
-          >
-            Login
-          </button>
-        )}
+        {user.username?.charAt(0).toUpperCase()}
       </div>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.reload();
+        }}
+        style={{
+          padding: "6px 12px",
+          borderRadius: "20px",
+          border: "none",
+          cursor: "pointer",
+          backgroundColor: "#eee",
+        }}
+      >
+        Logout
+      </button>
+    </>
+  ) : (
+    <button
+      onClick={() => navigate("/login")}
+      style={{
+        padding: "8px 16px",
+        borderRadius: "20px",
+        border: "none",
+        cursor: "pointer",
+        backgroundColor: "#065fd4",
+        color: "white",
+        fontWeight: "bold",
+      }}
+    >
+      Login
+    </button>
+  )}
+</div>
     </div>
   );
 }
