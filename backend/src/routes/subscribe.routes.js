@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  toggleSubscribe,
-  getSubscriberCount
+  toggleSubscription,
+  getChannelSubscribers,
 } from "../controllers/subscribe.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 // Subscribe / Unsubscribe (Protected)
-router.post("/", protect, toggleSubscribe);
+router.post("/", protect, toggleSubscription);
 
 // Get subscriber count (Public)
-router.get("/channel/:channelId", getSubscriberCount);
+router.get("/channel/:channelId", getChannelSubscribers);
 
 export default router;

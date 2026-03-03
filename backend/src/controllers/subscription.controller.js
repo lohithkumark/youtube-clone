@@ -43,3 +43,15 @@ export const getMySubscriptions = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getChannelSubscribers = async (req, res) => {
+  try {
+    const count = await Subscribe.countDocuments({
+      channel: req.params.channelId,
+    });
+
+    res.status(200).json({ subscribers: count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

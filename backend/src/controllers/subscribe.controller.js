@@ -1,77 +1,65 @@
 import Subscribe from "../models/Subscribe.js";
-import Channel from "../models/Channel.js";
 
-/* SUBSCRIBE / UNSUBSCRIBE (Protected) */
-export const toggleSubscribe = async (req, res) => {
+// =================================
+// SUBSCRIBE / UNSUBSCRIBE
+// =================================
+export const toggleSubscription = async (req, res) => {
   try {
     const { channelId } = req.body;
 
     if (!channelId) {
       return res.status(400).json({
-        message: "channelId is required"
+        message: "Channel ID is required",
       });
     }
 
-    const channel = await Channel.findById(channelId);
-
-    if (!channel) {
-      return res.status(404).json({
-        message: "Channel not found"
-      });
-    }
-
-    // Prevent subscribing to own channel
-    if (channel.owner.toString() === req.user._id.toString()) {
-      return res.status(400).json({
-        message: "You cannot subscribe to your own channel"
-      });
-    }
-
-    const existingSubscription = await Subscribe.findOne({
-      subscriber: req.user._id,
-      channel: channelId
+    const existing = await Subscribe.findOne({
+      user: req.user._id,
+      channel: channelId,
     });
 
-    if (existingSubscription) {
-      await existingSubscription.deleteOne();
+    // If already subscribed → Unsubscribe
+    if (existing) {
+      await existing.deleteOne();
 
       return res.status(200).json({
-        message: "Unsubscribed successfully"
+        subscribed: false,
       });
     }
 
+    // Otherwise → Subscribe
     await Subscribe.create({
-      subscriber: req.user._id,
-      channel: channelId
+      user: req.user._id,
+      channel: channelId,
     });
 
     res.status(201).json({
-      message: "Subscribed successfully"
+      subscribed: true,
     });
 
   } catch (error) {
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 };
 
-
-// GET SUBSCRIBER COUNT (Public)
-
-export const getSubscriberCount = async (req, res) => {
+// =================================
+// GET CHANNEL SUBSCRIBER COUNT
+// =================================
+export const getChannelSubscribers = async (req, res) => {
   try {
     const count = await Subscribe.countDocuments({
-      channel: req.params.channelId
+      channel: req.params.channelId,
     });
 
     res.status(200).json({
-      subscribers: count
+      subscribers: count,
     });
 
   } catch (error) {
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 };

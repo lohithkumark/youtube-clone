@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Channel from "../models/Channel.js"; // 🔥 ADD THIS
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -26,9 +27,17 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
+    // 🔥 AUTO CREATE CHANNEL
+    await Channel.create({
+      name: `${username}'s Channel`,
+      description: "Welcome to my channel!",
+      owner: newUser._id,
+    });
+
     res.status(201).json({
       message: "User registered successfully",
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -61,15 +70,16 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-   res.status(200).json({
-  message: "Login successful",
-  token,
-  user: {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-  },
-});
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id, // 🔥 IMPORTANT: use _id not id
+        username: user.username,
+        email: user.email,
+      },
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
