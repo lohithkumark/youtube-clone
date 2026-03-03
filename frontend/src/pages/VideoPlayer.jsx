@@ -14,13 +14,15 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    // Fetch selected video
+    const token = localStorage.getItem("token");
+
+    // 1️⃣ Fetch video
     axios
       .get(`http://localhost:8080/api/videos/${id}`)
       .then((res) => setVideo(res.data))
       .catch((err) => console.log(err));
 
-    // Fetch related videos
+    // 2️⃣ Fetch related videos
     axios
       .get("http://localhost:8080/api/videos?limit=100")
       .then((res) => {
@@ -31,7 +33,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
       })
       .catch((err) => console.log(err));
 
-    // Fetch like count
+    // 3️⃣ Fetch like count
     axios
       .get(`http://localhost:8080/api/likes/video/${id}`)
       .then((res) => {
@@ -39,29 +41,42 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
       })
       .catch((err) => console.log(err));
 
+    // 4️⃣ Add to history automatically
+    if (token) {
+      axios.post(
+        "http://localhost:8080/api/history",
+        { videoId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ).catch((err) => console.log(err));
+    }
+
   }, [id]);
 
   const handleLike = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await axios.post(
-      "http://localhost:8080/api/likes",
-      { videoId: id },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // 🔥 THIS IS THE FIX
-        },
-      }
-    );
+      const res = await axios.post(
+        "http://localhost:8080/api/likes",
+        { videoId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setLikes(res.data.totalLikes);
-    setLiked(res.data.liked);
+      setLikes(res.data.totalLikes);
+      setLiked(res.data.liked);
 
-  } catch (error) {
-    console.log(error.response?.data);
-  }
-};
+    } catch (error) {
+      console.log(error.response?.data);
+    }
+  };
 
   if (!video) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
 
@@ -76,7 +91,10 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
       <Header setIsSidebarOpen={setIsSidebarOpen} />
 
       <div style={{ display: "flex" }}>
-        <Sidebar isSidebarOpen={isSidebarOpen} />
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
 
         <div style={{ padding: "24px", flex: 1 }}>
           <div style={{ display: "flex", gap: "24px" }}>
@@ -111,7 +129,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
                   {formatViews(video.views)}
                 </p>
 
-                {/* 🔥 Like Button */}
+                {/* Like Button */}
                 <div style={{ marginTop: "10px" }}>
                   <button
                     onClick={handleLike}
@@ -156,7 +174,7 @@ function VideoPlayer({ isSidebarOpen, setIsSidebarOpen }) {
               </div>
             </div>
 
-            {/* RIGHT SECTION - Related Videos */}
+            {/* RIGHT SECTION - Related */}
             <div style={{ flex: 1 }}>
               <h3>Related Videos</h3>
 
