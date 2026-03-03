@@ -5,6 +5,9 @@ import VideoPlayer from "./pages/VideoPlayer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Subscriptions from "./pages/Subscriptions";
+import Library from "./pages/Library";
+import History from "./pages/History";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -41,6 +44,35 @@ function App() {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+
+
+<Route
+  path="/subscriptions"
+  element={
+    <ProtectedRoute>
+      <Subscriptions />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/library"
+  element={
+    <ProtectedRoute>
+      <Library />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/history"
+  element={
+    <ProtectedRoute>
+      <History />
+    </ProtectedRoute>
+  }
+/>
+
 
     </Routes>
   );
