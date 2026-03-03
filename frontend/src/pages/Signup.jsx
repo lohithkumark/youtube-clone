@@ -13,7 +13,7 @@ function Signup() {
       const res = await axios.post(
         "http://localhost:8080/api/auth/signup",
         {
-          username: name, // 🔥 IMPORTANT: backend expects username
+          username: name, 
           email,
           password,
         }

@@ -91,7 +91,7 @@ function Channel({ isSidebarOpen, setIsSidebarOpen }) {
 
         <div style={{ padding: "24px", flex: 1 }}>
           
-          {/* 🔥 CHANNEL HEADER */}
+          {/* CHANNEL HEADER */}
           <div
             style={{
               backgroundColor: "white",
@@ -133,7 +133,7 @@ function Channel({ isSidebarOpen, setIsSidebarOpen }) {
             </button>
           </div>
 
-          {/* 🔥 VIDEOS GRID */}
+          {/* VIDEOS GRID */}
           <h3>Videos</h3>
 
           <div
